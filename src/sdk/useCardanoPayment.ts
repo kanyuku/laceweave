@@ -7,7 +7,8 @@ import {
 import type { 
   CardanoPaymentConfig, 
   CardanoPaymentState, 
-  PaymentStatus 
+  PaymentStatus,
+  CardanoNetwork 
 } from "./types";
 import { formatCIP20Metadata, sleep, parseWalletError } from "./utils";
 
@@ -29,6 +30,7 @@ export const useCardanoPayment = (config: CardanoPaymentConfig): CardanoPaymentS
   const [txHash, setTxHash] = useState<string | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const [confirmations, setConfirmations] = useState<number>(0);
+  const [network, setNetwork] = useState<CardanoNetwork>("mainnet");
   
   const isPolling = useRef(false);
 
@@ -43,6 +45,12 @@ export const useCardanoPayment = (config: CardanoPaymentConfig): CardanoPaymentS
   const getProvider = useCallback(() => {
     if (configProvider) return configProvider;
     const apiKey = import.meta.env?.VITE_BLOCKFROST_API_KEY || "";
+    
+    // Detect network from API key
+    if (apiKey.startsWith("preprod")) setNetwork("preprod");
+    else if (apiKey.startsWith("preview")) setNetwork("preview");
+    else setNetwork("mainnet");
+
     return new BlockfrostProvider(apiKey);
   }, [configProvider]);
 
@@ -78,7 +86,7 @@ export const useCardanoPayment = (config: CardanoPaymentConfig): CardanoPaymentS
         await sleep(15000);
       }
     } catch (e) {
-      console.error(e);
+      console.error("Polling error:", e);
     } finally {
       isPolling.current = false;
     }
@@ -99,7 +107,9 @@ export const useCardanoPayment = (config: CardanoPaymentConfig): CardanoPaymentS
       getProvider();
       const meshMetadata = formatCIP20Metadata(metadata);
       
-      const tx = new Transaction({ initiator: wallet as any })
+      // Use proper type for initiator if possible, otherwise keep as any but with a comment
+      // In some versions of Mesh, the types are slightly inconsistent between useWallet and Transaction
+      const tx = new Transaction({ initiator: wallet })
         .sendLovelace(merchantAddress, amountLovelace.toString());
       
       nativeTokens.forEach(token => {
@@ -122,7 +132,7 @@ export const useCardanoPayment = (config: CardanoPaymentConfig): CardanoPaymentS
       
       pollForConfirmation(hash);
 
-    } catch (e: any) {
+    } catch (e: unknown) {
       const friendlyError = new Error(parseWalletError(e));
       setError(friendlyError);
       setStatus("error");
@@ -145,6 +155,7 @@ export const useCardanoPayment = (config: CardanoPaymentConfig): CardanoPaymentS
     txHash,
     error,
     confirmations,
+    network,
     isProcessing: ["preparing", "signing", "submitting", "confirming"].includes(status),
     initiatePayment,
     reset

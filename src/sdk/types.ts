@@ -16,7 +16,7 @@ export interface PaymentMetadata {
   orderId?: string;
   description?: string;
   externalRef?: string;
-  [key: string]: any;
+  [key: string]: string | number | boolean | undefined | string[] | Record<string, unknown>;
 }
 
 export interface CardanoPaymentConfig {
@@ -27,7 +27,7 @@ export interface CardanoPaymentConfig {
   confirmationsRequired?: number;
   provider?: BlockfrostProvider;
   onSuccess?: (txHash: string, details: PaymentResult) => void;
-  onError?: (error: any) => void;
+  onError?: (error: Error) => void;
 }
 
 export interface PaymentResult {
@@ -44,6 +44,7 @@ export interface CardanoPaymentState {
   txHash: string | null;
   error: Error | null;
   confirmations: number;
+  network: CardanoNetwork;
   isProcessing: boolean;
   initiatePayment: () => Promise<void>;
   reset: () => void;

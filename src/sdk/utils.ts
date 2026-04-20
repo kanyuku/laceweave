@@ -28,14 +28,29 @@ export const formatAda = (lovelace: bigint | string): string => {
   });
 };
 
-export const parseWalletError = (error: any): string => {
-  const message = error?.message || error?.toString() || "Unknown error";
+export const parseWalletError = (error: unknown): string => {
+  if (!error) return "Unknown error occurred.";
+
+  const message = error instanceof Error 
+    ? error.message 
+    : typeof error === "string" 
+      ? error 
+      : (error as Record<string, unknown>)?.message?.toString() || JSON.stringify(error);
   
-  if (message.includes("User declined")) return "Payment cancelled by user.";
-  if (message.includes("Insufficient balance")) return "Insufficient ADA in wallet.";
-  if (message.includes("Network error")) return "Blockchain network error. Please try again.";
+  if (message.includes("User declined") || message.includes("Declined")) {
+    return "Payment cancelled by user.";
+  }
+  if (message.includes("Insufficient balance") || message.includes("InsufficientFunds")) {
+    return "Insufficient ADA in wallet to complete this transaction.";
+  }
+  if (message.includes("Network error") || message.includes("connection")) {
+    return "Blockchain network error. Please check your connection and try again.";
+  }
+  if (message.includes("Inputs unavailable")) {
+    return "UTxO clash: Another transaction is pending. Please wait a moment.";
+  }
   
-  return message;
+  return message.length > 100 ? `${message.substring(0, 97)}...` : message;
 };
 
 export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
