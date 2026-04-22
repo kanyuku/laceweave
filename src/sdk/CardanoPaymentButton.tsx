@@ -42,14 +42,14 @@ export const CardanoPaymentButton: React.FC<CardanoPaymentButtonProps> = ({
 
   const getStatusConfig = () => {
     switch (status) {
-      case "preparing": return { label: "Preparing Tx...", icon: <Loader2 className="animate-spin" />, color: "bg-blue-500", aria: "Preparing transaction" };
+      case "preparing": return { label: "Preparing Tx...", icon: <Loader2 className="animate-spin" />, color: "bg-cyan-500", aria: "Preparing transaction" };
       case "signing": return { label: "Check Wallet...", icon: <Loader2 className="animate-spin" />, color: "bg-indigo-600", aria: "Waiting for wallet signature" };
       case "submitting": return { label: "Submitting...", icon: <Loader2 className="animate-spin" />, color: "bg-violet-600", aria: "Submitting to blockchain" };
       case "submitted": return { label: "Tx Submitted", icon: <CheckCircle2 />, color: "bg-emerald-500", aria: "Transaction successfully submitted" };
       case "confirming": return { label: `Confirming (${confirmations})`, icon: <Loader2 className="animate-spin" />, color: "bg-teal-500", aria: `Confirming transaction` };
       case "confirmed": return { label: "Payment Confirmed", icon: <CheckCircle2 />, color: "bg-green-600", aria: "Payment confirmed on ledger" };
       case "error": return { label: "Try Again", icon: <AlertCircle />, color: "bg-rose-500", aria: "Transaction error" };
-      default: return { label: label, icon: <CreditCard />, color: "bg-blue-600", aria: "Click to pay" };
+      default: return { label: label, icon: <CreditCard />, color: "bg-gradient-to-r from-magenta-600 to-indigo-700", aria: "Click to pay" };
     }
   };
 

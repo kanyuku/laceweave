@@ -1,24 +1,52 @@
 {
   "name": "laceweave",
-  "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "description": "A React SDK for accepting ADA and native token payments on Cardano, built on MeshJS.",
+  "author": "LaceWeave Protocol",
+  "license": "MIT",
+  "homepage": "https://github.com/laceweave/laceweave#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/laceweave/laceweave.git"
+  },
+  "bugs": {
+    "url": "https://github.com/laceweave/laceweave/issues"
+  },
+  "keywords": ["cardano", "meshjs", "ada", "payment", "react", "sdk", "web3"],
   "type": "module",
+  "files": ["dist", "README.md"],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:lib": "vite build --config vite.lib.config.ts",
+    "prepublishOnly": "npm run build:lib",
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0",
+    "@meshsdk/core": ">=1.9.0-beta.102",
+    "@meshsdk/react": ">=2.0.0-beta.2"
+  },
   "dependencies": {
-    "@meshsdk/core": "^1.9.0-beta.102",
-    "@meshsdk/react": "^2.0.0-beta.2",
     "framer-motion": "^12.38.0",
-    "lucide-react": "^1.8.0",
-    "react": "^19.2.5",
-    "react-dom": "^19.2.5"
+    "lucide-react": "^1.8.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
+    "@meshsdk/core": "^1.9.0-beta.102",
+    "@meshsdk/react": "^2.0.0-beta.2",
     "@types/node": "^24.12.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
@@ -27,8 +55,12 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.5.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
-    "vite": "^8.0.9"
+    "vite": "^8.0.9",
+    "vite-plugin-dts": "^4.5.4",
+    "vite-plugin-node-polyfills": "^0.26.0"
   }
 }

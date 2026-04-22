@@ -1,0 +1,21 @@
+# Demo app build output
+dist-app/
+
+# Source — not needed by consumers
+src/
+public/
+
+# Config files
+vite.config.ts
+vite.lib.config.ts
+tsconfig*.json
+eslint.config.js
+index.html
+.env*
+
+# Dev tooling
+node_modules/
+*.lock
+package-lock.json
+.git/
+.gitignore

@@ -1,14 +1,15 @@
 import { useState, useCallback, useRef } from "react";
 import { useWallet } from "@meshsdk/react";
-import { 
-  BlockfrostProvider, 
-  Transaction 
+import {
+  BlockfrostProvider,
+  Transaction,
+  type IInitiator,
 } from "@meshsdk/core";
-import type { 
-  CardanoPaymentConfig, 
-  CardanoPaymentState, 
+import type {
+  CardanoPaymentConfig,
+  CardanoPaymentState,
   PaymentStatus,
-  CardanoNetwork 
+  CardanoNetwork,
 } from "./types";
 import { formatCIP20Metadata, sleep, parseWalletError } from "./utils";
 
@@ -106,10 +107,10 @@ export const useCardanoPayment = (config: CardanoPaymentConfig): CardanoPaymentS
 
       getProvider();
       const meshMetadata = formatCIP20Metadata(metadata);
-      
-      // Use proper type for initiator if possible, otherwise keep as any but with a comment
-      // In some versions of Mesh, the types are slightly inconsistent between useWallet and Transaction
-      const tx = new Transaction({ initiator: wallet })
+
+      // Cast wallet to IInitiator — MeshCardanoBrowserWallet satisfies the interface
+      // at runtime but the beta types have a minor getCollateral() mismatch.
+      const tx = new Transaction({ initiator: wallet as unknown as IInitiator })
         .sendLovelace(merchantAddress, amountLovelace.toString());
       
       nativeTokens.forEach(token => {
